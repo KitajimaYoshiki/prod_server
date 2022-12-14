@@ -30,10 +30,10 @@ export class TasksService {
 
   async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
     const updateResult = await this.taskRepository.update(id, updateTaskDto);
-    
-    if(updateResult.affected) {
+
+    if (updateResult.affected) {
       return await this.taskRepository.findOneBy({ id });
-    }else{
+    } else {
       return;
     }
   }

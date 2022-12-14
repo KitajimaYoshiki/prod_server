@@ -1,4 +1,9 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Test {
@@ -17,10 +22,10 @@ export class Task {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', {length: 30, nullable: false})
+  @Column('varchar', { length: 30, nullable: false })
   title: string;
 
-  @Column({type: 'datetime', nullable: false})
+  @Column({ type: 'datetime', nullable: false })
   deadline: Date;
 
   @Column({ default: false })
