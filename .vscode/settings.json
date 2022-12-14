@@ -1,0 +1,30 @@
+{
+  // Default Formatter を Prettier に設定
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // 保存時に自動整形しない
+  "editor.formatOnSave": false,
+  // .js 保存時に自動整形する
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  // .ts 保存時に自動整形する
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  // .jsx 保存時に自動整形する
+  "[javascriptreact]": {
+    "editor.formatOnSave": true
+  },
+  // .tsx 保存時に自動整形する
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  },
+  // .json 保存時に自動整形しない
+  "[json]": {
+    "editor.formatOnSave": false
+  },
+  // 保存時に ESLint の自動修正を適用する
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}

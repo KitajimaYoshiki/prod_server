@@ -1,0 +1,30 @@
+{
+  "recommendations": [
+    // Auto Close Tag
+    "formulahendry.auto-close-tag",
+
+    // Auto Import
+    "steoates.autoimport",
+
+    // Auto Rename
+    "formulahendry.auto-rename-tag",
+
+    // ES7 React/Redux/GraphQL/React-Native snippets
+    "dsznajder.es7-react-js-snippets",
+
+    // ESLint
+    "dbaeumer.vscode-eslint",
+
+    // Jest Runner
+    "firsttris.vscode-jest-runner",
+
+    // Japanese Language Pack for Visual Studio Code
+    "ms-ceintl.vscode-language-pack-ja",
+
+    // Prettier - Code formatter
+    "esbenp.prettier-vscode",
+
+    // vscode-styled-components
+    "styled-components.vscode-styled-components"
+  ]
+}
