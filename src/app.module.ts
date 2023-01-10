@@ -4,6 +4,10 @@ import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './tasks/entities/task.entity';
+import { Tasks } from './tasks/entities/tasks.entity';
+import { Users } from './tasks/entities/users.entity';
+import { Tags } from './tasks/entities/tags.entity';
+import { CheckList } from './tasks/entities/checklist.entity';
 
 @Module({
   imports: [
@@ -16,7 +20,7 @@ import { Task } from './tasks/entities/task.entity';
       database: 'todos',
       charset: 'utf8mb4',
       synchronize: process.env.NODE_ENV != 'production',
-      entities: [Task],
+      entities: [Task, Users, Tasks, Tags, CheckList],
     }),
     TasksModule,
   ],

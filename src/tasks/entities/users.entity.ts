@@ -1,7 +1,11 @@
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Param } from '@nestjs/common';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Users {
-  @PrimaryColumn('varchar', { length: 26, nullable: false })
-  user_id: String;
+  @PrimaryColumn('varchar', { length: 25, nullable: false })
+  user_id: string;
+
+  @Column('varchar', { length: 64, nullable: false })
+  user_pass: string;
 }
