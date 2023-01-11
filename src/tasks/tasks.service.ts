@@ -1,38 +1,45 @@
 import { BadRequestException, HttpCode, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { identity } from 'rxjs';
-import { Repository } from 'typeorm';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Repository, SimpleConsoleLogger } from 'typeorm';
+import { tasks } from './dto/tasks';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { User } from './dto/user';
-import { Task } from './entities/task.entity';
-import { Users } from './entities/users.entity';
+import { Tasks } from './entities/tasks.entity';
 
 @Injectable()
 export class TaskService {
   constructor(
-    @InjectRepository(Task)
-    private taskRepository: Repository<Task>,
+    @InjectRepository(Tasks)
+    private taskRepository: Repository<Tasks>,
   ) {}
 
-  async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    const insertResult = await this.taskRepository.insert(createTaskDto);
+  // async create(createTaskDto: CreateTaskDto): Promise<Task> {
+  //   const insertResult = await this.taskRepository.insert(createTaskDto);
 
-    return this.taskRepository.findOneBy({
-      id: insertResult.identifiers[0].id,
-    });
+  //   return this.taskRepository.findOneBy({
+  //     id: insertResult.identifiers[0].id,
+  //   });
+  // }
+
+  // 作者で検索
+  // show_completed: true -> 完了も取得, false -> 完了は無視
+  async findAll(user: string, show_completed: boolean) {
+    let tasks = new Array<tasks>();
+    // show_completedによる分岐
+    if (show_completed) {
+      tasks = await this.taskRepository.findBy({
+        author: user,
+      });
+    } else {
+      tasks = await this.taskRepository.findBy({
+        author: user,
+        done: false,
+      });
+    }
+
+    return tasks;
   }
 
-  async findAll() {
-    return await this.taskRepository.find();
-  }
-
-  async findOne(id: number) {
-    return await this.taskRepository.findOneBy({ id });
-  }
-
-  async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
+  async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Tasks> {
     const updateResult = await this.taskRepository.update(id, updateTaskDto);
 
     if (updateResult.affected) {
@@ -40,40 +47,5 @@ export class TaskService {
     } else {
       return;
     }
-  }
-
-  async remove(id: number): Promise<boolean> {
-    const deleteResult = await this.taskRepository.delete(id);
-    return Boolean(deleteResult.affected);
-  }
-}
-
-@Injectable()
-export class UsersService {
-  constructor(
-    @InjectRepository(Users)
-    private userRepository: Repository<Users>,
-  ) {}
-
-  async create(id: string, password: string) {
-    const insertResult = await this.userRepository.insert({
-      user_id: id,
-      user_pass: password,
-    });
-
-    return insertResult;
-  }
-
-  async findAll() {
-    return await this.userRepository.find();
-  }
-
-  async findOne(user_id: string): Promise<Users> {
-    return await this.userRepository.findOneBy({ user_id });
-  }
-
-  async remove(id: number): Promise<boolean> {
-    const deleteResult = await this.userRepository.delete(id);
-    return Boolean(deleteResult.affected);
   }
 }

@@ -8,6 +8,8 @@ import { Tasks } from './tasks/entities/tasks.entity';
 import { Users } from './tasks/entities/users.entity';
 import { Tags } from './tasks/entities/tags.entity';
 import { CheckList } from './tasks/entities/checklist.entity';
+import { UsersModule } from './tasks/users.module';
+import { TagsModule } from './tasks/tags.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { CheckList } from './tasks/entities/checklist.entity';
       entities: [Task, Users, Tasks, Tags, CheckList],
     }),
     TasksModule,
+    UsersModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
