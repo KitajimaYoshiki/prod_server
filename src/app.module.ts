@@ -10,6 +10,7 @@ import { Tags } from './tasks/entities/tags.entity';
 import { CheckList } from './tasks/entities/checklist.entity';
 import { UsersModule } from './tasks/users.module';
 import { TagsModule } from './tasks/tags.module';
+import { CheckListModule } from './tasks/checkList.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TagsModule } from './tasks/tags.module';
     TasksModule,
     UsersModule,
     TagsModule,
+    CheckListModule,
   ],
   controllers: [AppController],
   providers: [AppService],

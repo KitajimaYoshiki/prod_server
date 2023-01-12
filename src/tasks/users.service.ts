@@ -24,8 +24,8 @@ export class UsersService {
   }
 
   async findUserId(user_id: string): Promise<boolean> {
-    const user = await this.userRepository.findOneBy({ user_id });
-    return !!user;
+    const flag = await this.userRepository.findOneBy({ user_id });
+    return !!flag;
   }
 
   async findUser(user_id: string): Promise<Users> {

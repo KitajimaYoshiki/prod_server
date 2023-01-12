@@ -1,36 +1,28 @@
 import { BadRequestException, HttpCode, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SimpleConsoleLogger } from 'typeorm';
+import { Repository } from 'typeorm';
 import { tasks } from './dto/tasks';
-import { UpdateTaskDto } from './dto/update-task.dto';
 import { Tasks } from './entities/tasks.entity';
 
 @Injectable()
-export class TaskService {
+export class TasksService {
   constructor(
     @InjectRepository(Tasks)
-    private taskRepository: Repository<Tasks>,
+    private tasksRepository: Repository<Tasks>,
   ) {}
-
-  // async create(createTaskDto: CreateTaskDto): Promise<Task> {
-  //   const insertResult = await this.taskRepository.insert(createTaskDto);
-
-  //   return this.taskRepository.findOneBy({
-  //     id: insertResult.identifiers[0].id,
-  //   });
-  // }
 
   // 作者で検索
   // show_completed: true -> 完了も取得, false -> 完了は無視
+  // show_completedが未入力(null)の場合、false扱いになる
   async findAll(user: string, show_completed: boolean) {
     let tasks = new Array<tasks>();
     // show_completedによる分岐
     if (show_completed) {
-      tasks = await this.taskRepository.findBy({
+      tasks = await this.tasksRepository.findBy({
         author: user,
       });
     } else {
-      tasks = await this.taskRepository.findBy({
+      tasks = await this.tasksRepository.findBy({
         author: user,
         done: false,
       });
@@ -39,13 +31,24 @@ export class TaskService {
     return tasks;
   }
 
-  async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Tasks> {
-    const updateResult = await this.taskRepository.update(id, updateTaskDto);
+  // 作者検索
+  // いた場合はtrue, いない場合はfalse
+  async findUserId(author: string): Promise<boolean> {
+    const flag = await this.tasksRepository.findOneBy({ author });
+    return !!flag;
+  }
 
-    if (updateResult.affected) {
-      return await this.taskRepository.findOneBy({ id });
-    } else {
-      return;
-    }
+  // タスクの有無を調べる
+  // ある場合はtrue, ない場合はfalse
+  async findTask(id: number): Promise<boolean> {
+    const flag = await this.tasksRepository.findOneBy({ id });
+    return !!flag;
+  }
+
+  // タスクの状態更新
+  async update(id: number, status: boolean): Promise<Tasks> {
+    let data = await this.tasksRepository.findOneBy({ id });
+    data.done = status;
+    return await this.tasksRepository.save(data);
   }
 }

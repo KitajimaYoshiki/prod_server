@@ -1,11 +1,7 @@
 import { BadRequestException, HttpCode, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SimpleConsoleLogger } from 'typeorm';
-import { tags } from './dto/tags';
-import { tasks } from './dto/tasks';
-import { UpdateTaskDto } from './dto/update-task.dto';
+import { Repository } from 'typeorm';
 import { Tags } from './entities/tags.entity';
-import { Tasks } from './entities/tasks.entity';
 
 @Injectable()
 export class TagsService {
@@ -22,18 +18,10 @@ export class TagsService {
     return tags;
   }
 
-  async findTag(tag_id: number): Promise<boolean> {
-    const user = await this.tagsRepository.findOneBy({ tag_id });
-    return !!user;
+  // タスクの有無を調べる
+  // ある場合はtrue, ない場合はfalse
+  async findTask(tag_id: number): Promise<boolean> {
+    const flag = await this.tagsRepository.findOneBy({ tag_id });
+    return !!flag;
   }
-
-  // async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Tasks> {
-  //   const updateResult = await this.tagsRepository.update(id, updateTaskDto);
-
-  //   if (updateResult.affected) {
-  //     return await this.tagsRepository.findOneBy({ id });
-  //   } else {
-  //     return;
-  //   }
-  // }
 }

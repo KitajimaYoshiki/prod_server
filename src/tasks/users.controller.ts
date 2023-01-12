@@ -1,4 +1,3 @@
-import { Center } from '@chakra-ui/react';
 import {
   Body,
   Controller,
@@ -22,6 +21,17 @@ export class UsersController {
   @Post('create_user')
   @HttpCode(HttpStatus.CREATED)
   async create_user(@Body('user') user: User) {
+    // 入力値チェック
+    // 必須項目の入力チェック
+    if (!user || !user.id || !user.password) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `user is required.`,
+        },
+        400,
+      );
+    }
     // idが使用済みかどうかの確認
     const check = await this.usersService.findUserId(user.id);
     if (check) {
@@ -55,6 +65,17 @@ export class UsersController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body('user') user: User) {
+    // 入力値チェック
+    // 必須項目の入力チェック
+    if (!user || !user.id || !user.password) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `user is required.`,
+        },
+        400,
+      );
+    }
     // ユーザーの有無を確認
     const check = await this.usersService.findUserId(user.id);
     if (!check) {
