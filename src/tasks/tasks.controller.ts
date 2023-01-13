@@ -12,6 +12,7 @@ import {
 import { TasksService } from './tasks.service';
 import { mapTasks } from './mapFn/mapTasks';
 import { tasks } from './dto/tasks';
+import { oneTask } from './dto/oneTask';
 
 @Controller('api/tasks')
 export class TasksController {
@@ -98,13 +99,17 @@ export class TasksController {
     }
 
     // 表示データへ変換
-    const returnTask: tasks = {
+    const inTask: tasks = {
       id: updateTask.id,
       title: updateTask.title,
       start: updateTask.start,
       deadline: updateTask.deadline,
       memo: updateTask.memo,
       done: updateTask.done,
+    };
+
+    const returnTask: oneTask = {
+      task: inTask,
     };
 
     return returnTask;

@@ -107,10 +107,4 @@ export class UsersController {
       );
     }
   }
-
-  @Delete(':id')
-  @HttpCode(204)
-  async remove(@Param('id') id: string) {
-    return await this.usersService.remove(+id);
-  }
 }

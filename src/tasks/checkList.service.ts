@@ -13,10 +13,10 @@ export class CheckListService {
 
   // タスクIDで検索
   // show_completed: true -> 完了も取得, false -> 完了は無視
-  // show_completedが未入力(null)の場合、false扱いになる
+  // show_completedが未入力(null)の場合、true扱いになる
   async findAll(task_id: number, show_completed: boolean) {
     let items = new Array<CheckList>();
-    if (show_completed) {
+    if (show_completed || show_completed == null) {
       items = await this.checkListRepository.findBy({
         task_id: task_id,
       });

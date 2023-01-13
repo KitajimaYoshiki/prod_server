@@ -11,6 +11,7 @@ import {
 import { CheckListService } from './checkList.service';
 import { checkList } from './dto/checkList';
 import { itemInfo } from './dto/itemInfo';
+import { oneItem } from './dto/oneItem';
 import { CheckList } from './entities/checklist.entity';
 import { mapCheckList } from './mapFn/mapCheskList';
 
@@ -94,10 +95,15 @@ export class CheckListController {
       );
     }
 
-    const returnItem: checkList = {
+    // 表示データへ変換
+    const inItem: checkList = {
       id: updateItem.item_id,
       name: updateItem.check_item,
       done: updateItem.done,
+    };
+
+    const returnItem: oneItem = {
+      item: inItem,
     };
 
     return returnItem;
