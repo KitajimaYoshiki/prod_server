@@ -1,4 +1,4 @@
-export interface tags {
+export interface tag {
   id: number;
   name: string;
 }

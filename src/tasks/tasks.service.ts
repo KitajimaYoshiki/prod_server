@@ -1,21 +1,24 @@
 import { BadRequestException, HttpCode, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { tasks } from './dto/tasks';
+import { task } from './dto/task';
 import { Tasks } from './entities/tasks.entity';
+import { Users } from './entities/users.entity';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Tasks)
     private tasksRepository: Repository<Tasks>,
+    @InjectRepository(Users)
+    private userRepository: Repository<Users>,
   ) {}
 
   // 作者で検索
   // show_completed: true -> 完了も取得, false -> 完了は無視
   // show_completedが未入力(null)の場合、false扱いになる
   async findAll(user: string, show_completed: boolean) {
-    let tasks = new Array<tasks>();
+    let tasks = new Array<task>();
     // show_completedによる分岐
     if (show_completed) {
       tasks = await this.tasksRepository.findBy({
@@ -33,8 +36,8 @@ export class TasksService {
 
   // 作者検索
   // いた場合はtrue, いない場合はfalse
-  async findUserId(author: string): Promise<boolean> {
-    const flag = await this.tasksRepository.findOneBy({ author });
+  async findUserId(user_id: string): Promise<boolean> {
+    const flag = await this.userRepository.findOneBy({ user_id });
     return !!flag;
   }
 

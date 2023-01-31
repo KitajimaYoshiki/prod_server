@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { itemInfo } from './dto/itemInfo';
 import { CheckList } from './entities/checklist.entity';
+import { Tasks } from './entities/tasks.entity';
 
 @Injectable()
 export class CheckListService {
   constructor(
     @InjectRepository(CheckList)
     private checkListRepository: Repository<CheckList>,
+    @InjectRepository(Tasks)
+    private tasksRepository: Repository<Tasks>,
   ) {}
 
   // タスクIDで検索
@@ -31,7 +34,14 @@ export class CheckListService {
 
   // タスクの有無を調べる
   // ある場合はtrue, ない場合はfalse
-  async findTask(task_id: number): Promise<boolean> {
+  async findTask(id: number): Promise<boolean> {
+    const flag = await this.tasksRepository.findOneBy({ id });
+    return !!flag;
+  }
+
+  // アイテムの有無を調べる
+  // ある場合はtrue, ない場合はfalse
+  async findItems(task_id: number): Promise<boolean> {
     const flag = await this.checkListRepository.findOneBy({ task_id });
     return !!flag;
   }

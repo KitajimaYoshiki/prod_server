@@ -48,6 +48,12 @@ export class CheckListController {
       );
     }
 
+    // アイテムチェック
+    const itemFlag = await this.checkListService.findItems(task_id);
+    if (!itemFlag) {
+      return null;
+    }
+
     // アイテムの受け取り
     const result = await this.checkListService.findAll(task_id, show_completed);
     return result.map(mapCheckList);

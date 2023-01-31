@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { mapTasks } from './mapFn/mapTasks';
-import { tasks } from './dto/tasks';
+import { task } from './dto/task';
 import { oneTask } from './dto/oneTask';
 
 @Controller('api/tasks')
@@ -99,7 +99,7 @@ export class TasksController {
     }
 
     // 表示データへ変換
-    const inTask: tasks = {
+    const inTask: task = {
       id: updateTask.id,
       title: updateTask.title,
       start: updateTask.start,

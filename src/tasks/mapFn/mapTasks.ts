@@ -1,8 +1,8 @@
-import { tasks } from '../dto/tasks';
+import { task } from '../dto/task';
 import { Tasks } from '../entities/tasks.entity';
 
 export function mapTasks(tasks: Tasks) {
-  var task: tasks = {
+  var task: task = {
     id: tasks.id,
     title: tasks.title,
     start: tasks.start,

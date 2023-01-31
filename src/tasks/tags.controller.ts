@@ -38,6 +38,11 @@ export class TagsController {
         400,
       );
     }
+    // タグの有無をチェック
+    const tag_flag = await this.tagsService.findTags(task_id);
+    if (!tag_flag) {
+      return null;
+    }
 
     // タグ受け取り
     const result = await this.tagsService.findAll(task_id);

@@ -1,5 +1,5 @@
-import { tasks } from './tasks';
+import { task } from './task';
 
 export interface oneTask {
-  task: tasks;
+  task: task;
 }
