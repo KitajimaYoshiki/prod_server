@@ -22,25 +22,16 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   async create_user(@Body('user') user: User) {
     // 入力値チェック
-    // 必須項目の入力チェック
-    if (!user || !user.id || !user.password) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: `user is required.`,
-        },
-        400,
-      );
-    }
+
     // idが使用済みかどうかの確認
     const check = await this.usersService.findUserId(user.id);
     if (check) {
       throw new HttpException(
         {
-          status: HttpStatus.BAD_REQUEST,
+          status: HttpStatus.CONFLICT,
           error: `user_id '${user.id}' is already taken.`,
         },
-        400,
+        HttpStatus.CONFLICT,
       );
     }
 
@@ -56,7 +47,7 @@ export class UsersController {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Internal server error.',
         },
-        500,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
     return;
@@ -67,28 +58,20 @@ export class UsersController {
   async login(@Body('user') user: User) {
     // 入力値チェック
     // 必須項目の入力チェック
-    if (!user || !user.id || !user.password) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: `user is required.`,
-        },
-        400,
-      );
-    }
-    // ユーザーの有無を確認
-    const check = await this.usersService.findUserId(user.id);
-    if (!check) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: `user_id '${user.id}' is not found.`,
-        },
-        400,
-      );
-    }
+
     // ユーザー情報取得
     const entryUser = await this.usersService.findUser(user.id);
+
+    // ユーザーの有無で分岐
+    if (!entryUser) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: `user_id '${user.id}' is not found.`,
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     // passwordとsaltを結合
     const str = user.password + salt;
     // ハッシュ化
@@ -103,7 +86,7 @@ export class UsersController {
           status: HttpStatus.UNAUTHORIZED,
           error: `user_id '${user.id}' is not found.`,
         },
-        401,
+        HttpStatus.UNAUTHORIZED,
       );
     }
   }

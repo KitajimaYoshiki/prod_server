@@ -2,9 +2,12 @@ import { usePinInputDescendantsContext } from '@chakra-ui/react';
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   HttpCode,
   HttpException,
   HttpStatus,
+  ParseBoolPipe,
+  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -22,20 +25,10 @@ export class CheckListController {
   @Post('get_check')
   @HttpCode(HttpStatus.OK)
   async findAll(
-    @Body('task_id') task_id: number,
-    @Body('show_completed') show_completed: boolean,
+    @Body('task_id', ParseIntPipe) task_id: number,
+    @Body('show_completed', new DefaultValuePipe(true))
+    show_completed?: boolean,
   ) {
-    // 入力値チェック
-    // 必須項目の入力チェック
-    if (!task_id) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: `task_id is required.`,
-        },
-        400,
-      );
-    }
     // 該当タスクの有無チェック
     const flag = await this.checkListService.findTask(task_id);
     if (!flag) {
@@ -44,43 +37,23 @@ export class CheckListController {
           status: HttpStatus.BAD_REQUEST,
           error: `task_id '${task_id}' was not found.`,
         },
-        400,
+        HttpStatus.BAD_REQUEST,
       );
-    }
-
-    // アイテムチェック
-    const itemFlag = await this.checkListService.findItems(task_id);
-    if (!itemFlag) {
-      return null;
     }
 
     // アイテムの受け取り
     const result = await this.checkListService.findAll(task_id, show_completed);
+    if (result.length == 0) {
+      return null;
+    }
     return result.map(mapCheckList);
   }
 
   @Put('check')
   async update(
     @Body('item_info') item_info: itemInfo,
-    @Body('status') status: boolean,
+    @Body('status', ParseBoolPipe) status: boolean,
   ) {
-    // 入力値チェック
-    // 必須項目のチェック
-    if (
-      !item_info ||
-      !item_info.item_id ||
-      !item_info.task_id ||
-      status == null
-    ) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: `item_info and status are required.`,
-        },
-        400,
-      );
-    }
-
     // 変数
     let updateItem: CheckList;
 
@@ -97,7 +70,7 @@ export class CheckListController {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Internal server error.',
         },
-        500,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 

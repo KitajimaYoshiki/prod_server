@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   HttpException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { mapTags } from './mapFn/mapTags';
 import { TagsService } from './tags.service';
@@ -15,18 +16,7 @@ export class TagsController {
 
   @Post('get_tags')
   @HttpCode(HttpStatus.OK)
-  async findAll(@Body('task_id') task_id: number) {
-    // 入力値チェック
-    // 必須項目の入力チェック
-    if (!task_id) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: `task_id is required.`,
-        },
-        400,
-      );
-    }
+  async findAll(@Body('task_id', ParseIntPipe) task_id: number) {
     // 該当タスクの有無チェック
     const flag = await this.tagsService.findTask(task_id);
     if (!flag) {
@@ -35,17 +25,15 @@ export class TagsController {
           status: HttpStatus.BAD_REQUEST,
           error: `task_id '${task_id}' was not found.`,
         },
-        400,
+        HttpStatus.BAD_REQUEST,
       );
-    }
-    // タグの有無をチェック
-    const tag_flag = await this.tagsService.findTags(task_id);
-    if (!tag_flag) {
-      return null;
     }
 
     // タグ受け取り
     const result = await this.tagsService.findAll(task_id);
+    if (result.length == 0) {
+      return null;
+    }
     return result.map(mapTags);
   }
 }

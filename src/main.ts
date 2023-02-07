@@ -8,6 +8,7 @@ const bootstrap = async () => {
     origin: '*',
     allowedHeaders: 'origin, X-Requested-With, Content-Type, Accept',
   });
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3001);
 };
 

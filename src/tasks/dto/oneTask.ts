@@ -1,5 +1,7 @@
+import { ValidateNested } from 'class-validator';
 import { task } from './task';
 
-export interface oneTask {
+export class oneTask {
+  @ValidateNested()
   task: task;
 }

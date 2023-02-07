@@ -1,5 +1,7 @@
+import { ValidateNested } from 'class-validator';
 import { checkList } from './checkList';
 
-export interface oneItem {
+export class oneItem {
+  @ValidateNested()
   item: checkList;
 }

@@ -8,6 +8,9 @@ import {
   HttpStatus,
   HttpException,
   Put,
+  DefaultValuePipe,
+  ParseIntPipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { mapTasks } from './mapFn/mapTasks';
@@ -22,33 +25,36 @@ export class TasksController {
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Body('user_id') user_id: string,
-    @Body('show_completed') show_completed: boolean,
+    @Body('show_completed', new DefaultValuePipe(false))
+    show_completed?: boolean,
   ) {
     // 入力値チェック
-    // 必須項目の入力チェック
-    if (!user_id) {
+    // 入力チェック NULL,字種,字数チェック
+    if (
+      !user_id ||
+      !user_id.match(/^[a-zA-Z0-9]*$/) ||
+      !(0 < user_id.length && user_id.length <= 25)
+    ) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: `user_id is required.`,
+          error: `user_id is required and can be up to 25 alphanumeric characters.`,
         },
-        400,
-      );
-    }
-    // 該当作者の有無
-    const flag = await this.tasksService.findUserId(user_id);
-    if (!flag) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: `user_id '${user_id}' was not found.`,
-        },
-        400,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
     // タスク受け取り
     const result = await this.tasksService.findAll(user_id, show_completed);
+    if (result.length == 0) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `user_id '${user_id}' was not found.`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     return result.map(mapTasks);
   }
@@ -56,8 +62,8 @@ export class TasksController {
   @Put('task')
   @HttpCode(HttpStatus.OK)
   async update(
-    @Body('task_id') task_id: number,
-    @Body('status') status: boolean,
+    @Body('task_id', ParseIntPipe) task_id: number,
+    @Body('status', ParseBoolPipe) status: boolean,
   ) {
     // 入力値チェック
     // 必須項目の入力チェック
@@ -67,7 +73,7 @@ export class TasksController {
           status: HttpStatus.BAD_REQUEST,
           error: `task_id and status are required.`,
         },
-        400,
+        HttpStatus.BAD_REQUEST,
       );
     }
     // 該当タスクの有無
@@ -78,7 +84,7 @@ export class TasksController {
           status: HttpStatus.BAD_REQUEST,
           error: `user_id '${task_id}' was not found.`,
         },
-        400,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -94,7 +100,7 @@ export class TasksController {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'Internal server error.',
         },
-        500,
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
 
