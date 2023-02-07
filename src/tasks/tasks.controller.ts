@@ -65,17 +65,6 @@ export class TasksController {
     @Body('task_id', ParseIntPipe) task_id: number,
     @Body('status', ParseBoolPipe) status: boolean,
   ) {
-    // 入力値チェック
-    // 必須項目の入力チェック
-    if (!task_id || status == null) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: `task_id and status are required.`,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     // 該当タスクの有無
     const flag = await this.tasksService.findTask(task_id);
     if (!flag) {

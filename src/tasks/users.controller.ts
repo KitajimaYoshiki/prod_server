@@ -21,8 +21,6 @@ export class UsersController {
   @Post('create_user')
   @HttpCode(HttpStatus.CREATED)
   async create_user(@Body('user') user: User) {
-    // 入力値チェック
-
     // idが使用済みかどうかの確認
     const check = await this.usersService.findUserId(user.id);
     if (check) {
@@ -56,9 +54,6 @@ export class UsersController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body('user') user: User) {
-    // 入力値チェック
-    // 必須項目の入力チェック
-
     // ユーザー情報取得
     const entryUser = await this.usersService.findUser(user.id);
 
