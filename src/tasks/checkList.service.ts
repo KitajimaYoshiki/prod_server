@@ -16,7 +16,10 @@ export class CheckListService {
 
   // タスクIDで検索
   // show_completed: true -> 完了も取得, false -> 完了は無視
-  async findAll(task_id: number, show_completed?: boolean) {
+  async findAll(
+    task_id: number,
+    show_completed?: boolean,
+  ): Promise<CheckList[]> {
     let items = new Array<CheckList>();
     if (show_completed) {
       items = await this.checkListRepository.findBy({
@@ -56,7 +59,11 @@ export class CheckListService {
   }
 
   // 状態更新
-  async update(task_id: number, item_id: number, status: boolean) {
+  async update(
+    task_id: number,
+    item_id: number,
+    status: boolean,
+  ): Promise<CheckList> {
     let data = await this.checkListRepository.findOneBy({
       task_id: task_id,
       item_id: item_id,

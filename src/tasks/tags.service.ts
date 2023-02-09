@@ -14,7 +14,7 @@ export class TagsService {
   ) {}
 
   // タスクIDで検索
-  async findAll(task_id: number) {
+  async findAll(task_id: number): Promise<Tags[]> {
     const tags = await this.tagsRepository.findBy({
       task_id: task_id,
     });

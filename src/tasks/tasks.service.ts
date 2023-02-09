@@ -16,7 +16,7 @@ export class TasksService {
 
   // 作者で検索
   // show_completed: true -> 完了も取得, false -> 完了は無視
-  async findAll(user: string, show_completed?: boolean) {
+  async findAll(user: string, show_completed?: boolean): Promise<task[]> {
     let tasks = new Array<task>();
     // show_completedによる分岐
     if (show_completed) {
