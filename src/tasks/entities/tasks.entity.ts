@@ -27,7 +27,10 @@ export class Tasks {
   @Column({ default: false })
   done: boolean;
 
-  @Column('varchar', { length: 25 })
+  @Column('varchar', {
+    length: 25,
+    nullable: false,
+  })
   author: string;
 
   @ManyToOne(() => Users, (users) => users.user_id)
