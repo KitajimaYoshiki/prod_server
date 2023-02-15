@@ -27,7 +27,7 @@ export class Tasks {
   @Column({ default: false })
   done: boolean;
 
-  @Column('varchar', {
+  @Column('varbinary', {
     length: 25,
     nullable: false,
   })

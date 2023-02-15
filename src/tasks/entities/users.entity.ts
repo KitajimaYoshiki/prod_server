@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Users {
-  @PrimaryColumn('varchar', {
+  @PrimaryColumn('varbinary', {
     length: 25,
     nullable: false,
   })
