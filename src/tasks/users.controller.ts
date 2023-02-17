@@ -37,6 +37,7 @@ export class UsersController {
     const str = user.password + salt;
     // ハッシュ化
     const hash = createHash('sha256').update(str, 'utf8').digest('hex');
+
     try {
       await this.usersService.create(user.id, hash);
     } catch (e) {
