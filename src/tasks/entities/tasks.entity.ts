@@ -27,9 +27,12 @@ export class Tasks {
   @Column({ default: false })
   done: boolean;
 
-  @Column('varbinary', {
+  @Column({
+    type: 'varchar',
     length: 25,
     nullable: false,
+    charset: 'utf8mb4',
+    collation: 'utf8mb4_bin',
   })
   author: string;
 
