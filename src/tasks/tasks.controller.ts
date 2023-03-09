@@ -2,8 +2,6 @@ import {
   Controller,
   Post,
   Body,
-  Patch,
-  Param,
   HttpCode,
   HttpStatus,
   HttpException,
@@ -16,6 +14,8 @@ import { TasksService } from './tasks.service';
 import { mapTasks } from './mapFn/mapTasks';
 import { task } from './dto/task';
 import { oneTask } from './dto/oneTask';
+import { createTaskDto } from './dto/create_task_dto';
+import { returnTaskId } from './dto/returnTaskId';
 
 @Controller('api/tasks')
 export class TasksController {
@@ -59,6 +59,65 @@ export class TasksController {
     return result.map(mapTasks);
   }
 
+  @Post('add_task')
+  @HttpCode(HttpStatus.CREATED)
+  async create(
+    @Body('user_id') user_id: string,
+    @Body('task') createTask: createTaskDto,
+  ) {
+    // 入力値チェック
+    // 入力チェック NULL,字種,字数チェック
+    if (
+      !user_id ||
+      !user_id.match(/^[a-zA-Z0-9]*$/) ||
+      !(0 < user_id.length && user_id.length <= 25)
+    ) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `user_id is required and can be up to 25 alphanumeric characters.`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // ID検索
+    const authorFlag: boolean = await this.tasksService.findUserId(user_id);
+    if (!authorFlag) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `user_id '${user_id}' was not found.`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    let createId: number;
+    // タスク作成
+    try {
+      createId = await this.tasksService.create(user_id, createTask);
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Internal server error.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    const resultTaskId: returnTaskId = {
+      id: createId,
+      title: createTask.title,
+      start: createTask.start,
+      deadline: createTask.deadline,
+      memo: createTask.memo,
+      done: false,
+    };
+    return resultTaskId;
+  }
+
   @Put('task')
   @HttpCode(HttpStatus.OK)
   async update(
@@ -66,7 +125,7 @@ export class TasksController {
     @Body('status', ParseBoolPipe) status: boolean,
   ) {
     // 該当タスクの有無
-    const flag = await this.tasksService.findTask(task_id);
+    const flag: boolean = await this.tasksService.findTask(task_id);
     if (!flag) {
       throw new HttpException(
         {
@@ -78,7 +137,7 @@ export class TasksController {
     }
 
     // 変数
-    let updateTask;
+    let updateTask: task;
 
     // 更新
     try {

@@ -7,6 +7,8 @@ import {
   HttpException,
   ParseIntPipe,
 } from '@nestjs/common';
+import { createTagDto } from './dto/create_tag_dto';
+import { tag } from './dto/tag';
 import { mapTags } from './mapFn/mapTags';
 import { TagsService } from './tags.service';
 
@@ -35,5 +37,41 @@ export class TagsController {
       return null;
     }
     return result.map(mapTags);
+  }
+
+  @Post('add_tag')
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body('tag') createTag: createTagDto) {
+    // 該当タスクの有無チェック
+    const flag: boolean = await this.tagsService.findTask(createTag.task_id);
+    if (!flag) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `task_id '${createTag.task_id}' was not found.`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // タグ登録
+    let createResult: number;
+    try {
+      createResult = await this.tagsService.create(createTag);
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Internal server error.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    const returnTag: tag = {
+      id: createResult,
+      name: createTag.name,
+    };
+    return returnTag;
   }
 }

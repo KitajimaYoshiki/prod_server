@@ -1,6 +1,7 @@
-import { BadRequestException, HttpCode, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InsertResult, Repository } from 'typeorm';
+import { createTaskDto } from './dto/create_task_dto';
 import { task } from './dto/task';
 import { Tasks } from './entities/tasks.entity';
 import { Users } from './entities/users.entity';
@@ -47,10 +48,34 @@ export class TasksService {
     return !!flag;
   }
 
+  // 全件取得
+  async findAllUsersTasks(): Promise<task[]> {
+    let allTasks = new Array<task>();
+    allTasks = await this.tasksRepository.find();
+    return allTasks;
+  }
+
   // タスクの状態更新
   async update(id: number, status: boolean): Promise<Tasks> {
     let data = await this.tasksRepository.findOneBy({ id });
     data.done = status;
     return await this.tasksRepository.save(data);
+  }
+
+  // タスク作成
+  async create(userId: string, createTask: createTaskDto): Promise<number> {
+    // ID取得
+    const finalId: number = (await this.findAllUsersTasks()).length;
+
+    const createResult: InsertResult = await this.tasksRepository.insert({
+      id: finalId + 1,
+      title: createTask.title,
+      start: createTask.start,
+      deadline: createTask.deadline,
+      memo: createTask.memo,
+      done: createTask.done,
+      author: userId,
+    });
+    return finalId + 1;
   }
 }

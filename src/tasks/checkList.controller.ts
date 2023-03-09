@@ -1,4 +1,3 @@
-import { usePinInputDescendantsContext } from '@chakra-ui/react';
 import {
   Body,
   Controller,
@@ -13,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { CheckListService } from './checkList.service';
 import { checkList } from './dto/checkList';
+import { createItemDto } from './dto/create_item_dto';
 import { itemInfo } from './dto/itemInfo';
 import { oneItem } from './dto/oneItem';
 import { CheckList } from './entities/checklist.entity';
@@ -49,7 +49,47 @@ export class CheckListController {
     return result.map(mapCheckList);
   }
 
+  @Post('add_check')
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body('item') createItem: createItemDto) {
+    // 該当タスクの有無チェック
+    const flag: boolean = await this.checkListService.findTask(
+      createItem.task_id,
+    );
+    if (!flag) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `task_id '${createItem.task_id}' was not found.`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // 作成
+    let createResult: number;
+    try {
+      createResult = await this.checkListService.create(createItem);
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Internal server error.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    const returnItem: checkList = {
+      id: createResult,
+      name: createItem.name,
+      done: false,
+    };
+    return returnItem;
+  }
+
   @Put('check')
+  @HttpCode(HttpStatus.OK)
   async update(
     @Body('item_info') item_info: itemInfo,
     @Body('status', ParseBoolPipe) status: boolean,

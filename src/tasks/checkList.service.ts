@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { itemInfo } from './dto/itemInfo';
+import { InsertResult, Repository } from 'typeorm';
+import { createItemDto } from './dto/create_item_dto';
 import { CheckList } from './entities/checklist.entity';
 import { Tasks } from './entities/tasks.entity';
 
@@ -71,5 +71,22 @@ export class CheckListService {
     data.done = status;
     await this.checkListRepository.save(data);
     return data;
+  }
+
+  // アイテム作成
+  async create(addItem: createItemDto): Promise<number> {
+    // ID取得
+    const finalId: number = await (
+      await this.findAll(addItem.task_id, true)
+    ).length;
+
+    // 登録
+    const createResult: InsertResult = await this.checkListRepository.insert({
+      task_id: addItem.task_id,
+      item_id: finalId + 1,
+      check_item: addItem.name,
+    });
+
+    return finalId + 1;
   }
 }
