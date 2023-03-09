@@ -1,6 +1,7 @@
-import { BadRequestException, HttpCode, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InsertResult, Repository } from 'typeorm';
+import { createTagDto } from './dto/create_tag_dto';
 import { Tags } from './entities/tags.entity';
 import { Tasks } from './entities/tasks.entity';
 
@@ -33,5 +34,21 @@ export class TagsService {
   async findTask(tag_id: number): Promise<boolean> {
     const flag = await this.tasksRepository.findOneBy({ id: tag_id });
     return !!flag;
+  }
+
+  // タグ登録
+  async create(addTag: createTagDto): Promise<number> {
+    // ID取得
+    const final: Tags[] = await this.findAll(addTag.task_id);
+    const finalId = final.length;
+
+    //create
+    const createResult: InsertResult = await this.tagsRepository.insert({
+      task_id: addTag.task_id,
+      tag_id: finalId + 1,
+      tag_name: addTag.name,
+    });
+
+    return finalId + 1;
   }
 }
